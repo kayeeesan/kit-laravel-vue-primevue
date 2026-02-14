@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Http\Requests\RoleRequest;
 use App\Http\Resources\Role as ResourcesRole;
 use App\Models\Role;
@@ -13,7 +14,7 @@ class RoleController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         $roles = [];
         if (isset($request->search)) {

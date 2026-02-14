@@ -9,7 +9,7 @@ export default function useRoles() {
     const is_success = ref(false);
     const errors = ref({});
     const pagination = ref({});
-    const query = ref({
+    const querySearch = ref({
         search: null,
         page: 1,
     });
@@ -17,9 +17,9 @@ export default function useRoles() {
     const getRoles = async (params = {}) => {
         is_loading.value = true;
 
-        let query_str = { ...query.value, ...params };
+        let query_str = { ...querySearch.value, ...params };
         await axios
-            .get('/api/roles?page=' + query.value.page, query_str)
+            .get('/api/roles?page=' + querySearch.value.page, {params: query_str})
             .then((response) => {
                 roles.value = response.data.data;
                 pagination.value = response.data.meta;
@@ -116,7 +116,7 @@ export default function useRoles() {
         is_success,
         errors,
         pagination, 
-        query,
+        querySearch,
         storeRole,
         updateRole,
         destroyRole,

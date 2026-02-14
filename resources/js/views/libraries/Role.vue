@@ -7,7 +7,7 @@ import Column from 'primevue/column';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 
-const { roles, pagination, query, is_loading, getRoles, destroyRole, role: roleStore, storeRole, updateRole } = useRoles();
+const { roles, pagination, querySearch, is_loading, getRoles, destroyRole, role: roleStore, storeRole, updateRole } = useRoles();
 
 const show_form_modal = ref(false);
 const currentRole = ref(null); // Holds role data for editing
@@ -22,13 +22,13 @@ onMounted(() => {
 });
 
 // Watch page changes
-watch(() => query.page, () => {
+watch(() => querySearch.page, () => {
     getRoles();
 });
 
 // Reload roles
 const reloadRoles = async () => {
-    query.page = 1;
+    querySearch.page = 1;
     await getRoles();
 };
 </script>
@@ -41,11 +41,11 @@ const reloadRoles = async () => {
     <!-- Search + Reload -->
     <div class="mb-3 flex flex-col sm:flex-row justify-between items-center gap-2">
       <input
-        v-model="query.search"
+        v-model="querySearch.search"
         type="text"
         placeholder="Search roles..."
         class="border rounded px-3 py-2 w-full sm:w-64 focus:ring-2 focus:ring-blue-500"
-        @input="() => { query.page = 1; getRoles(); }"
+        @input="() => { querySearch.page = 1; getRoles(); }"
       />
       <!-- Open modal button -->
       <Button label="New Role" class="btn btn-primary" @click="showModalForm(true)" />
@@ -57,11 +57,11 @@ const reloadRoles = async () => {
       :value="roles"
       :loading="is_loading"
       :paginator="true"
-      :first="(query.page - 1) * pagination.per_page"
+      :first="(querySearch.page - 1) * pagination.per_page"
       :rows="pagination.per_page"
       :totalRecords="pagination.total"
       :lazy="true"
-      @page="(event) => { query.page = event.page + 1 }"
+      @page="(event) => { querySearch.page = event.page + 1 }"
       class="shadow-lg rounded-lg overflow-hidden"
     >
       <Column field="id" header="#" style="width: 50px" />
