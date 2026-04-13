@@ -28,7 +28,7 @@ class UserRequest extends FormRequest
                 'username' => 'required|string|max:255|unique:users,username',
                 'first_name' => 'required|string|max:255',
                 'last_name' => 'required|string|max:255',
-                'user_roles' => 'required',
+                'user_roles' => 'sometimes|array',
             ];
         } else {
             return [
@@ -36,7 +36,7 @@ class UserRequest extends FormRequest
                 'username' => 'required|string|max:255|unique:users,username,'.$this->id,
                 'first_name' => 'required|string|max:255',
                 'last_name' => 'required|string|max:255',
-                'user_roles' => 'required',
+                'user_roles' => 'sometimes|array',
             ];
         }
     }

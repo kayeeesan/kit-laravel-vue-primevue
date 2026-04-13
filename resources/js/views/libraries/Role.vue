@@ -31,6 +31,11 @@ const reloadRoles = async () => {
     querySearch.page = 1;
     await getRoles();
 };
+
+const closeModal = () => {
+  show_form_modal.value = false;
+  currentRole.value = null;
+}
 </script>
 
 
@@ -90,14 +95,15 @@ const reloadRoles = async () => {
     <!-- Modal -->
     <Dialog
       header="Role Form"
-      :visible.sync="show_form_modal"
+      v-model:visible="show_form_modal"
       modal
       class="w-1/2"
       :closable="true"
+      @hide="closeModal"
     >
       <RoleForm 
           :role="currentRole" 
-          @saved="() => { show_form_modal = false; reloadRoles(); }" 
+          @saved="() => { closeModal(); reloadRoles(); }" 
       />
     </Dialog>
 

@@ -18,9 +18,10 @@ class UserController extends Controller
                     ->orWhere('last_name', 'like', '%' . $search . '%')
                     ->orWhere('middle_name', 'like', '%' . $search . '%');
             });
-        })->when($request->role, function ($db, $role) {
-            $db->whereHas('roles', function($q) use($role) {
-                return $q->where('name', 'like', '%' . $role . '%');
+        })->when($request->role_ids, function ($db, $roleId) {
+            $db->whereHas('roles', function($q) use($roleId) {
+                // return $q->where('name', 'like', '%' . $role . '%');
+                $q->where('roles.id', $roleId);
             });
         });
 

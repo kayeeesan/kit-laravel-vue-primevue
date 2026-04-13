@@ -1,12 +1,21 @@
 <script setup>
 import { ref, onMounted, watch } from 'vue';
 import useUsers from '../../composables/users';
+import UserForm from '../../components/libraries/user/form.vue';
 import DataTable from 'primevue/datatable';
 import Column from 'primevue/column';
 import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
 
 const { users, pagination, querySearch, is_loading, getUsers, destroyUser } = useUsers();
 
+const show_form_modal = ref(false);
+const currentUser = ref(null); // Holds user data for editing
+
+const showModalForm = (val, user = null) => {
+    currentUser.value = user ? { ...user } : { username: "", first_name: "", last_name: "", middle_name: "", user_roles: [] }; // clone to avoid reactive mutation
+    show_form_modal.value = val;
+}
 onMounted(() => {
     getUsers();
 });
@@ -20,6 +29,11 @@ watch(() => querySearch.page, () => {
 const reloadUsers = async () => {
     querySearch.page = 1;
     await getUsers();
+};
+
+const closeModal = () => {
+  show_form_modal.value = false;
+  currentUser.value = null;
 };
 </script>
 
@@ -36,6 +50,7 @@ const reloadUsers = async () => {
         class="border rounded px-3 py-2 w-full sm:w-64 focus:ring-2 focus:ring-blue-500"
         @input="() => { querySearch.page = 1; getUsers(); }"
       />
+      <Button label="New User" class="btn btn-primary" @click="showModalForm(true)" />
       <Button label="Reload" icon="pi pi-refresh" class="btn btn-primary" @click="reloadUsers" />
     </div>
 
@@ -54,6 +69,14 @@ const reloadUsers = async () => {
       <Column field="id" header="#" style="width: 50px" />
       <Column field="username" header="Username" />
       <Column field="full_name" header="Full Name" />
+      <Column header="Roles">
+        <template #body="{ data }">
+          <span v-if="data.roles.length">
+            {{ data.roles.map(r => r.name).join(', ') }}
+          </span>
+          <span v-else>-</span>
+        </template>
+      </Column>
 
       <!-- Actions column using template slot -->
       <Column header="Actions" style="width: 160px">
@@ -62,7 +85,7 @@ const reloadUsers = async () => {
             <Button
               icon="pi pi-pencil"
               class="btn btn-outline-primary btn-sm"
-              @click="() => alert('Edit ' + data.username)"
+              @click="() => showModalForm(true, data)"
             />
             <Button
               icon="pi pi-trash"
@@ -73,5 +96,19 @@ const reloadUsers = async () => {
         </template>
       </Column>
     </DataTable>
+
+    <!-- User Form Modal -->
+     <Dialog
+      header="User Form"
+      v-model:visible="show_form_modal"
+      modal
+      class="w-1/2"
+      :closable="true"
+     >
+      <UserForm
+        :user="currentUser"
+        @saved="() => { closeModal(); reloadUsers(); }"
+      />
+    </Dialog>
   </div>
 </template>
